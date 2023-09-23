@@ -43,9 +43,9 @@ async function getData() {
   const value = await store.getAll();
   const listagemDiv = document.querySelector('.listagem'); 
 
-  if (value.length > 0) {
-    listagemDiv.innerHTML = '';
+  listagemDiv.innerHTML = '';
 
+  if (value.length > 0) {
     value.forEach(item => {
       const card = document.createElement('div');
       card.classList.add('card'); 
@@ -55,9 +55,14 @@ async function getData() {
 
       nomeElement.textContent = `Nome: ${item.nome}`;
       idadeElement.textContent = `Idade: ${item.idade}`;
+
+      const removerButton = document.createElement('button');
+      removerButton.textContent = 'Remover';
+      removerButton.addEventListener('click', () => removeData(item.nome));
       
       card.appendChild(nomeElement);
       card.appendChild(idadeElement);
+      card.appendChild(removerButton)
       listagemDiv.appendChild(card);
     });
   } else {
@@ -87,6 +92,22 @@ async function addData() {
   document.getElementById("nomeInput").value = "";
   document.getElementById("idadeInput").value = "";
   showResult("Nome e idade adicionado no banco de dados");
+}
+
+async function removeData(userNome) {
+  if (db == undefined) {
+    showResult("O banco de dados está fechado");
+    return;
+  }
+
+  const tx = await db.transaction("pessoas", "readwrite"); 
+  const store = tx.objectStore("pessoas");
+
+  await store.delete(userNome);
+  showResult("Usuário removido com sucesso!");
+
+  await tx.complete;
+  getData();
 }
 
 function showResult(text) {
