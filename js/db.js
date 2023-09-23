@@ -41,8 +41,25 @@ async function getData() {
   const tx = await db.transaction("pessoas", "readonly");
   const store = tx.objectStore("pessoas");
   const value = await store.getAll();
-  if (value) {
-    showResult("Dados do banco: " + JSON.stringify(value));
+  const listagemDiv = document.querySelector('.listagem'); 
+
+  if (value.length > 0) {
+    listagemDiv.innerHTML = '';
+
+    value.forEach(item => {
+      const card = document.createElement('div');
+      card.classList.add('card'); 
+
+      const nomeElement = document.createElement('p');
+      const idadeElement = document.createElement('p');
+
+      nomeElement.textContent = `Nome: ${item.nome}`;
+      idadeElement.textContent = `Idade: ${item.idade}`;
+      
+      card.appendChild(nomeElement);
+      card.appendChild(idadeElement);
+      listagemDiv.appendChild(card);
+    });
   } else {
     showResult("Não há nenhum dado no banco!");
   }
