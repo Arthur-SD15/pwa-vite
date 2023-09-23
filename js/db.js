@@ -49,10 +49,27 @@ async function getData() {
 }
 
 async function addData() {
+  const nome = document.getElementById("nomeInput").value;
+  const idade = document.getElementById("idadeInput").value;
+
+  if (db == undefined) {
+    showResult("O banco de dados está fechado");
+    return;
+  }
+
+  if (!nome || !idade) {
+    showResult("Preencha os campos");
+    return;
+  }
+
   const tx = await db.transaction("pessoas", "readwrite");
   const store = tx.objectStore("pessoas");
-  store.add({ nome: "Fulano" });
+  store.add({ nome: nome, idade: idade });
   await tx.done;
+
+  document.getElementById("nomeInput").value = "";
+  document.getElementById("idadeInput").value = "";
+  showResult("Nome e idade adicionado no banco de dados");
 }
 
 function showResult(text) {
